@@ -6,16 +6,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.Objects;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @ToString
-public class Pokemon extends Base {
+public class Pokemon extends Base implements Comparable<Pokemon> {
     public int id;
     public String name;
     public int base_experience;
@@ -36,14 +35,24 @@ public class Pokemon extends Base {
     @OneToMany(cascade = CascadeType.ALL)
     public Set<Type> types;
 
-//    public long getId() {
-//        return id;
-//    }
-//
-//    public void setId(long id) {
-//        this.id = id;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Pokemon pokemon = (Pokemon) o;
+        return id == pokemon.id;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id);
+    }
+
+    @Override
+    public int compareTo(Pokemon o) {
+        return Integer.compare(this.id, o.id);
+    }
 }
 
 
