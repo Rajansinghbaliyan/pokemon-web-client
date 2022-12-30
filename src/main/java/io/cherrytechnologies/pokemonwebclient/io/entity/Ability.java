@@ -2,19 +2,21 @@ package io.cherrytechnologies.pokemonwebclient.io.entity;
 
 
 import io.cherrytechnologies.pokemonwebclient.dto.AbilityDto;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
 public class Ability extends Base {
+
+    @ManyToMany(mappedBy = "abilities")
+    public Set<Pokemon> pokemons;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ability_id")
     public Ability2 ability;

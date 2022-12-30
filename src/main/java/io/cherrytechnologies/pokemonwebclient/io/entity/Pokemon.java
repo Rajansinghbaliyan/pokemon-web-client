@@ -3,10 +3,7 @@ package io.cherrytechnologies.pokemonwebclient.io.entity;
 
 import io.cherrytechnologies.pokemonwebclient.dto.PokemonDto;
 import io.cherrytechnologies.pokemonwebclient.io.projections.PokemonView;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -29,7 +26,11 @@ public class Pokemon extends Base implements Comparable<Pokemon> {
     private int weight;
     @OneToOne(cascade = CascadeType.ALL)
     private Species species;
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "abilities_pokemon",
+            joinColumns = @JoinColumn(name = "pokemon_uuid"),
+            inverseJoinColumns = @JoinColumn(name = "ability_uuid"))
     private Set<Ability> abilities;
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Form> forms;
@@ -40,7 +41,7 @@ public class Pokemon extends Base implements Comparable<Pokemon> {
     @OneToMany(cascade = CascadeType.ALL)
     private Set<Type> types;
 
-    public PokemonDto pokemonToDto(Pokemon this){
+    public PokemonDto pokemonToDto(Pokemon this) {
         return PokemonDto
                 .builder()
                 .name(this.getName())
@@ -59,7 +60,7 @@ public class Pokemon extends Base implements Comparable<Pokemon> {
                 .build();
     }
 
-    public PokemonView pokemonToPokemonView(){
+    public PokemonView pokemonToPokemonView() {
         return PokemonView
                 .builder()
                 .weight(this.getWeight())
