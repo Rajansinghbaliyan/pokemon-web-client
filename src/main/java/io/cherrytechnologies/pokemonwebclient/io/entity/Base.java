@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @MappedSuperclass
 @Data
 @NoArgsConstructor
-public class Base {
+public class Base implements Serializable {
 
     @Id
     @GeneratedValue(generator = "UUID")
