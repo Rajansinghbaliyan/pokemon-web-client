@@ -21,7 +21,7 @@ public class RedisConfig {
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration(){
         return RedisCacheConfiguration
-                .defaultCacheConfig()
+                .defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                 .entryTtl(Duration.ofMinutes(60))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
@@ -31,19 +31,19 @@ public class RedisConfig {
     public RedisCacheManagerBuilderCustomizer customizer(){
         return (builder) -> builder
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_WEB,
-                        RedisCacheConfiguration.defaultCacheConfig()
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
                         )
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_DB,
-                        RedisCacheConfiguration.defaultCacheConfig()
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(1))
                 )
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_LIST_DB,
-                        RedisCacheConfiguration.defaultCacheConfig()
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
                         )
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_WEB_WITHOUT_EXCEPTION,
-                        RedisCacheConfiguration.defaultCacheConfig()
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
                         );
 
