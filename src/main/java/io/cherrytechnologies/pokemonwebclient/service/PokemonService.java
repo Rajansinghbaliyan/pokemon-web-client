@@ -5,12 +5,11 @@ import io.cherrytechnologies.pokemonwebclient.io.repository.PokemonRepository;
 import io.cherrytechnologies.pokemonwebclient.web.PokemonWeb;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,33 +22,38 @@ public class PokemonService {
     @Autowired
     private PokemonRepository repository;
 
+    @Cacheable(cacheNames = "pokemon-from-db")
     public Pokemon getPokemonBy(int id) {
         Optional<Pokemon> pokemonById = repository.getPokemonById(id);
 
         if (pokemonById.isEmpty()) {
             log.debug("Getting Pokemon form web: " + id);
-            pokemonById = Optional.ofNullable(web.getPokemonById(id).block());
+            pokemonById = web.getPokemonById(id);
             pokemonById.ifPresent(this::save);
         }
 
         return pokemonById.orElseThrow(RuntimeException::new);
     }
 
-    public List<Pokemon> getPokemonBetweenRange(int start, int end){
+    @Cacheable(cacheNames = "pokemon-list-from-db")
+    public List<Pokemon> getPokemonBetweenRange(int start, int end) {
         TreeSet<Pokemon> pokemonsByIdBetween = repository.getPokemonsByIdBetween(start, end);
 
         Map<Integer, Pokemon> collect = pokemonsByIdBetween
                 .stream()
                 .parallel()
-                .collect(Collectors.toMap(Pokemon::getId, Function.identity()));
+                .collect(Collectors.toMap(
+                        Pokemon::getId,
+                        Function.identity(),
+                        BinaryOperator.minBy(Comparator.comparingInt(p -> p.id)),
+                        TreeMap::new
+                ));
 
-        IntStream.rangeClosed(start,end)
+        IntStream.rangeClosed(start, end)
                 .parallel()
-                .filter( id -> !collect.containsKey(id))
+                .filter(id -> !collect.containsKey(id))
                 .mapToObj(id -> web
-                        .getPokemonById(id)
-                        .doOnNext(num -> log.debug("Getting Pokemon form web: "+num))
-                        .blockOptional()
+                        .getPokemonByIdNoException(id)
                         .map(this::save)
                 )
                 .filter(Optional::isPresent)
