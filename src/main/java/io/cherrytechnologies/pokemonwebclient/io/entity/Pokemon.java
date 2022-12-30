@@ -2,6 +2,7 @@ package io.cherrytechnologies.pokemonwebclient.io.entity;
 
 
 import io.cherrytechnologies.pokemonwebclient.dto.PokemonDto;
+import io.cherrytechnologies.pokemonwebclient.io.projections.PokemonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -10,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,25 +20,25 @@ import java.util.stream.Collectors;
 @ToString
 @NoArgsConstructor
 public class Pokemon extends Base implements Comparable<Pokemon> {
-    public int id;
-    public String name;
-    public int base_experience;
-    public int height;
-    public boolean is_default;
-    public String location_area_encounters;
-    public int weight;
+    private int id;
+    private String name;
+    private int base_experience;
+    private int height;
+    private boolean is_default;
+    private String location_area_encounters;
+    private int weight;
     @OneToOne(cascade = CascadeType.ALL)
-    public Species species;
+    private Species species;
     @OneToMany(cascade = CascadeType.ALL)
-    public Set<Ability> abilities;
+    private Set<Ability> abilities;
     @OneToMany(cascade = CascadeType.ALL)
-    public Set<Form> forms;
+    private Set<Form> forms;
     @OneToMany(cascade = CascadeType.ALL)
-    public Set<Move> moves;
+    private Set<Move> moves;
     @OneToMany(cascade = CascadeType.ALL)
-    public Set<Stat> stats;
+    private Set<Stat> stats;
     @OneToMany(cascade = CascadeType.ALL)
-    public Set<Type> types;
+    private Set<Type> types;
 
     public PokemonDto pokemonToDto(Pokemon this){
         return PokemonDto
@@ -56,6 +56,17 @@ public class Pokemon extends Base implements Comparable<Pokemon> {
                 .moves(this.moves.stream().map(Move::moveToDto).collect(Collectors.toSet()))
                 .stats(this.stats.stream().map(Stat::StatToDto).collect(Collectors.toSet()))
                 .types(this.types.stream().map(Type::TypeToDto).collect(Collectors.toSet()))
+                .build();
+    }
+
+    public PokemonView pokemonToPokemonView(){
+        return PokemonView
+                .builder()
+                .weight(this.getWeight())
+                .id(this.getId())
+                .name(this.getName())
+                .height(this.getHeight())
+                .base_experience(this.base_experience)
                 .build();
     }
 

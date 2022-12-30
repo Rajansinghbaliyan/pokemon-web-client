@@ -2,7 +2,6 @@ package io.cherrytechnologies.pokemonwebclient.config;
 
 import io.cherrytechnologies.pokemonwebclient.utils.CacheNameConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +42,10 @@ public class RedisConfig {
                                 .entryTtl(Duration.ofDays(10))
                         )
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_WEB_WITHOUT_EXCEPTION,
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                                .entryTtl(Duration.ofDays(10))
+                        )
+                .withCacheConfiguration("pokemon-find-all-pokemon-view",
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
                         );

@@ -13,4 +13,6 @@ public interface PokemonRepository extends JpaRepository<Pokemon, UUID> {
     Optional<Pokemon> getPokemonById(int id);
 
     TreeSet<Pokemon> getPokemonsByIdBetween(int start, int end);
+
+//    <T> List<T> findBy(Class<T> type);
 }
