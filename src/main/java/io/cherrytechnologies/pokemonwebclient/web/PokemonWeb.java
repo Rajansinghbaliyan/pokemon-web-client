@@ -5,17 +5,12 @@ import io.cherrytechnologies.pokemonwebclient.io.entity.Pokemon;
 import io.cherrytechnologies.pokemonwebclient.utils.CacheNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Operators;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Component
@@ -28,8 +23,9 @@ public class PokemonWeb {
     @Autowired
     private CacheNameConstants constants;
 
-    @Cacheable(cacheNames = "pokemon-form-web")
+//    @Cacheable(cacheNames = "pokemon-form-web")
     public Optional<Pokemon> getPokemonById(int id) {
+        log.debug("Getting Pokemon from web: " + id);
         return client
                 .get()
                 .uri("/{id}", id)
@@ -42,8 +38,9 @@ public class PokemonWeb {
                 .blockOptional();
     }
 
-    @Cacheable(cacheNames = "pokemon-form-web-without-exception")
+//    @Cacheable(cacheNames = "pokemon-form-web-without-exception")
     public Optional<Pokemon> getPokemonByIdNoException(int id) {
+        log.debug("Getting Pokemon form web without exception: "+ id);
         try {
             return client
                     .get()
