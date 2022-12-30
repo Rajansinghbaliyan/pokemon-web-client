@@ -18,7 +18,7 @@ public class RedisConfig {
     public CacheNameConstants constants;
 
     @Bean
-    public RedisCacheConfiguration redisCacheConfiguration(){
+    public RedisCacheConfiguration redisCacheConfiguration() {
         return RedisCacheConfiguration
                 .defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                 .entryTtl(Duration.ofMinutes(60))
@@ -27,12 +27,12 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisCacheManagerBuilderCustomizer customizer(){
+    public RedisCacheManagerBuilderCustomizer customizer() {
         return (builder) -> builder
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_WEB,
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
-                        )
+                )
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_DB,
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(1))
@@ -40,15 +40,22 @@ public class RedisConfig {
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_LIST_DB,
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
-                        )
+                )
                 .withCacheConfiguration(constants.CACHE_NAME_POKEMON_WEB_WITHOUT_EXCEPTION,
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
-                        )
+                )
                 .withCacheConfiguration("pokemon-find-all-pokemon-view",
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
-                        );
-
+                )
+                .withCacheConfiguration("pokemon-find-all-sort-two",
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                                .entryTtl(Duration.ofDays(10))
+                )
+                .withCacheConfiguration("pokemon-find-all-page",
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                                .entryTtl(Duration.ofDays(10))
+                );
     }
 }

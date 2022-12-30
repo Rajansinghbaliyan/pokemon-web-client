@@ -5,12 +5,14 @@ import io.cherrytechnologies.pokemonwebclient.exceptions.NotAbleToGet;
 import io.cherrytechnologies.pokemonwebclient.io.entity.Pokemon;
 import io.cherrytechnologies.pokemonwebclient.io.projections.PokemonView;
 import io.cherrytechnologies.pokemonwebclient.io.repository.PokemonRepository;
+import io.cherrytechnologies.pokemonwebclient.utils.BuildPage;
+import io.cherrytechnologies.pokemonwebclient.utils.BuildSort;
+import io.cherrytechnologies.pokemonwebclient.utils.SortOrder;
 import io.cherrytechnologies.pokemonwebclient.web.PokemonWeb;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -88,13 +90,45 @@ public class PokemonService {
         return repository.findAll(example).stream().map(Pokemon::pokemonToDto).toList();
     }
 
+    @Cacheable(cacheNames = "pokemon-find-all-sort-two")
+    public List<PokemonDto> findAllBySort(String orderOne, String propertiesOne, String orderTwo, String propertiesTwo) {
+        log.debug("Getting all pokemon by sort");
+        return repository
+                .findAll(
+                        Sort.by(BuildSort.buildSort(SortOrder.valueOf(orderOne)), propertiesOne)
+                                .and(Sort.by(BuildSort.buildSort(SortOrder.valueOf(orderTwo)), propertiesTwo))
+                )
+                .stream()
+                .map(Pokemon::pokemonToDto)
+                .toList();
+    }
+
     @Cacheable(cacheNames = "pokemon-find-all-pokemon-view")
-    public List<PokemonView> findAllByPokemonView(){
+    public List<PokemonView> findAllByPokemonView() {
+        log.debug("Getting all pokemon view");
         return repository
                 .findAll()
                 .stream()
                 .parallel()
                 .map(Pokemon::pokemonToPokemonView)
                 .toList();
+    }
+
+    @Cacheable(cacheNames = "pokemon-find-all-page")
+    public Page<PokemonDto> findAll(int pageSize, int offset, Optional<String> properties, Optional<String> order) {
+        log.debug("Get all pokemon by page");
+        Pageable pageable = PageRequest.of(
+                BuildPage.pageNumber(pageSize, offset),
+                pageSize,
+                Sort.by(
+                        order.map(o -> BuildSort.buildSort(SortOrder.valueOf(o)))
+                                .orElse(Sort.Direction.ASC),
+                        properties
+                                .orElseGet(() -> "id")
+                )
+        );
+        return repository
+                .findAll(pageable)
+                .map(Pokemon::pokemonToDto);
     }
 }
