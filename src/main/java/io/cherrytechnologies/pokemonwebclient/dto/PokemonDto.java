@@ -1,16 +1,16 @@
 package io.cherrytechnologies.pokemonwebclient.dto;
 
 
-import io.cherrytechnologies.pokemonwebclient.io.entity.*;
 import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Builder
 @ToString
+@Data
 public class PokemonDto implements Serializable {
     public int id;
     public String name;

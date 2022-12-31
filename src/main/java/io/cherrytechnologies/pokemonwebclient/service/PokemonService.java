@@ -131,4 +131,24 @@ public class PokemonService {
                 .findAll(pageable)
                 .map(Pokemon::pokemonToDto);
     }
+
+    @Cacheable(cacheNames = "find-all-default")
+    public List<PokemonDto> findAll(String properties, String order) {
+        log.debug("Get all pokemon with only sort");
+        return repository
+                .findAll(Sort.by(BuildSort.buildSort(SortOrder.valueOf(order)), properties))
+                .stream()
+                .map(Pokemon::pokemonToDto)
+                .toList();
+    }
+
+    @Cacheable(cacheNames = "find-all-default")
+    public List<PokemonView> findAllPokemonView(String properties, String order) {
+        log.debug("Get all pokemon with only sort");
+        return repository
+                .findAll(Sort.by(BuildSort.buildSort(SortOrder.valueOf(order)), properties))
+                .stream()
+                .map(Pokemon::pokemonToPokemonView)
+                .toList();
+    }
 }

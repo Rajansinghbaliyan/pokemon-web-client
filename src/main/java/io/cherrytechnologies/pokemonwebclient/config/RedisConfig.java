@@ -56,6 +56,18 @@ public class RedisConfig {
                 .withCacheConfiguration("pokemon-find-all-page",
                         RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
                                 .entryTtl(Duration.ofDays(10))
+                )
+                .withCacheConfiguration("find-all-default",
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                                .entryTtl(Duration.ofDays(10))
+                )
+                .withCacheConfiguration("find-one-default",
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                                .entryTtl(Duration.ofDays(5))
+                )
+                .withCacheConfiguration("find-all-view-default",
+                        RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                                .entryTtl(Duration.ofDays(5))
                 );
     }
 }
