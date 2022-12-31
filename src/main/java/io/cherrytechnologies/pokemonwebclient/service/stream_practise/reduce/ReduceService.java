@@ -7,8 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.javatuples.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -65,6 +70,40 @@ public class ReduceService {
                 .type(typeEnum.toString())
                 .count((int) count)
                 .build();
+    }
+
+
+    public List<TypeAndCountDto> typeAndCountAll() {
+        return service
+                .findAll("id", "asc")
+                .stream()
+                .flatMap(pokemonDto -> pokemonDto
+                        .getTypes()
+                        .stream()
+                        .map(typeDto -> new Pair<>(pokemonDto.getName(), typeDto.name))
+                )
+                .collect(
+                        () -> new HashMap<String, TypeAndCountDto>(),
+                        (HashMap<String, TypeAndCountDto> map, Pair<String, String> pair) -> {
+                            if (map.containsKey(pair.getValue1())) {
+                                TypeAndCountDto typeAndCountDto = map.get(pair.getValue1());
+                                typeAndCountDto.setCount(typeAndCountDto.count + 1);
+                            } else
+                                map.put(pair.getValue1(),
+                                        TypeAndCountDto
+                                                .builder()
+                                                .type(pair.getValue1())
+                                                .count(1)
+                                                .build()
+                                );
+                        },
+                        (map, map1) -> map.putAll(map1)
+
+                )
+                .values()
+                .stream()
+                .sorted(Comparator.comparingInt(type -> type.count * -1))
+                .toList();
     }
 }
 

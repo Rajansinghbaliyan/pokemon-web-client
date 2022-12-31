@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/pokemon/reduce")
 public class ReduceController {
@@ -23,6 +25,12 @@ public class ReduceController {
     @GetMapping("/type/simple")
     public ResponseEntity<TypeAndCountDto> getTypeAndNoOfPokemonSimple(@RequestParam String types){
         return ResponseEntity.ok(service.typeAndCountSimple(PokemonTypes.valueOf(types)));
+    }
+
+    @GetMapping("/type/all")
+    public ResponseEntity<List<TypeAndCountDto>> getAllType(){
+        return ResponseEntity
+                .ok(service.typeAndCountAll());
     }
 
 }
