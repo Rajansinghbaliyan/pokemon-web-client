@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pokemon/reduce")
@@ -31,6 +32,16 @@ public class ReduceController {
     public ResponseEntity<List<TypeAndCountDto>> getAllType(){
         return ResponseEntity
                 .ok(service.typeAndCountAll());
+    }
+
+    @GetMapping("/type/with-pokemon")
+    public ResponseEntity<Map<String, List<String>>> getPokemonAndType(){
+        return ResponseEntity.ok(service.getPokemonByType());
+    }
+
+    @GetMapping("/type/with-pokemon-set")
+    public ResponseEntity<Map<String,List<String>>> getPokemonTypeParticular(){
+        return ResponseEntity.ok(service.getPokemonByParticularTypeSet());
     }
 
 }

@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -98,13 +103,46 @@ public class ReduceService {
                                 );
                         },
                         (map, map1) -> map.putAll(map1)
-
                 )
                 .values()
                 .stream()
                 .sorted(Comparator.comparingInt(type -> type.count * -1))
                 .toList();
     }
+
+    public Map<String, List<String>> getPokemonByType() {
+        return service
+                .findAll("id", "asc")
+                .stream()
+                .flatMap(pokemonDto -> pokemonDto
+                        .getTypes()
+                        .stream()
+                        .map(typeDto -> new Pair<>(typeDto.name, pokemonDto.getName()))
+                )
+                .collect(groupingBy(Pair::getValue0,
+                        Collectors.mapping(Pair::getValue1, toList()))
+                );
+    }
+
+    public Map<String, List<String>> getPokemonByParticularTypeSet() {
+        return service
+                .findAll("id", "asc")
+                .stream()
+                .map(pokemonDto -> {
+                            String collect = pokemonDto
+                                    .getTypes()
+                                    .stream()
+                                    .map(typeDto -> typeDto.name)
+                                    .sorted()
+                                    .collect(Collectors.joining(","));
+                            return new Pair<>(collect, pokemonDto.getName());
+                        }
+                )
+                .collect(groupingBy(Pair::getValue0,
+                        Collectors.mapping(Pair::getValue1, toList())
+                ));
+    }
+
 }
 
 
