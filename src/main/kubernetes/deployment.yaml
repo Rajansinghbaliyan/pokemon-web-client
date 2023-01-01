@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: pokemon-web-main
+  labels:
+    app: pokemon-web-main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pokemon-web-main
+  template:
+    metadata:
+      labels:
+        app: pokemon-web-main
+    spec:
+      containers:
+        - name: pokemon-web-main
+          image: rbaliyan/pokemon-web-client:0.0.3-SNAPSHOT
+          imagePullPolicy: Always
+          env:
+            - name: MYSQL_HOST
+              value: mysql-web
+            - name: REDIS_HOST
+              value: redis
+
+---
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mysql-web-main
+  labels:
+    app: mysql-web-main
+spec:
+  selector:
+    matchLabels:
+      app: mysql-web-main
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql-web-main
+    spec:
+      containers:
+        - name: mysql-web-main
+          image: mysql:5.7
+          env:
+            - name: MYSQL_DATABASE
+              value: "db"
+            - name: MYSQL_USER
+              value: "user"
+            - name: MYSQL_PASSWORD
+              value: "password"
+            - name: MYSQL_ROOT_PASSWORD
+              value: "password"
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: my-sql-main
+      volumes:
+        - name: my-sql-main
+
+---
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.0-alpine3.15
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /data
+              name: redis
+      volumes:
+        - name: redis
+
