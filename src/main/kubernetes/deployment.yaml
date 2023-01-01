@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pokemon-web-main
-          image: rbaliyan/pokemon-web-client:0.0.3-SNAPSHOT
+          image: rbaliyan/pokemon-web-client:0.0.4-SNAPSHOT
           imagePullPolicy: Always
           env:
             - name: MYSQL_HOST
