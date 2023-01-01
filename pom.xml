@@ -68,12 +68,12 @@
         </dependency>
 
 
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-devtools</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--            <optional>true</optional>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-devtools</artifactId>-->
+        <!--            <scope>runtime</scope>-->
+        <!--            <optional>true</optional>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -99,6 +99,43 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.40.2</version>
+
+                <configuration>
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>rbaliyan/pokemon-web-client</name>
+                            <build>
+                                <!--  TODO better to have this in a subdirectory -->
+                                <dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>
+
+                                <!--copies artficact to docker build dir in target-->
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
             </plugin>
         </plugins>
     </build>
